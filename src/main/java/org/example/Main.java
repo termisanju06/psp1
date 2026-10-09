@@ -1,17 +1,48 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+public class Main {
+
+    public static void main(String[] args) {
+        Random random = new Random();
+        List<Vehicle> vehicles = new ArrayList<>();
+
+
+        for (int i = 0; i < 20; i++) {
+            String plate = String.format(
+                    "%04d-%03d",
+                    random.nextInt(10000),
+                    random.nextInt(1000)
+            );
+            int kwh = random.nextInt(91) + 10;
+            vehicles.add(new Vehicle(plate, kwh));
         }
+
+        StationStats stats = new StationStats();
+        ChargingStation station = new ChargingStation(stats);
+        try (ExecutorService executor = Executors.newFixedThreadPool(8)) {
+            for (Vehicle vehicle : vehicles) {
+                executor.submit(() -> station.charge(vehicle));
+            }
+        }
+
+        StatsSnapshot snapshot = stats.snapshot();
+
+        System.out.println("Registro:");
+        System.out.println("Kilovatios totales: " + snapshot.totalKwh());
+        System.out.println("Centimos totales: " + snapshot.totalCents());
+
+        long expectedKwh = vehicles.stream()
+                .mapToLong(Vehicle::kwh)
+                .sum();
+
+        System.out.println("Camparar:");
+        System.out.println("¿Coinciden los kWh? " + (expectedKwh == snapshot.totalKwh()));
+        System.out.println("¿Coinciden los ingresos? " + (snapshot.totalCents() == snapshot.totalKwh() * 45L));
     }
 }
