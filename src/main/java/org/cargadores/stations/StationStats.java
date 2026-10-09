@@ -1,7 +1,8 @@
-package org.example;
+package org.cargadores.stations;
+
+import org.cargadores.records.StatsSnapshot;
 
 public class StationStats {
-
     private long totalKwh = 0;
     private long totalCents = 0;
 

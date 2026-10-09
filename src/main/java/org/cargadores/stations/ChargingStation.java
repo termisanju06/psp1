@@ -1,9 +1,11 @@
-package org.example;
+package org.cargadores.stations;
+
+import org.cargadores.records.ChargeResult;
+import org.cargadores.records.Vehicle;
 
 import java.util.concurrent.Semaphore;
 
 public class ChargingStation {
-
     private final Semaphore chargers = new Semaphore(4);
     private final StationStats stats;
 
@@ -13,7 +15,6 @@ public class ChargingStation {
 
     public ChargeResult charge(Vehicle vehicle) {
         boolean acquired = false;
-
         try {
             chargers.acquire();
             acquired = true;
@@ -33,7 +34,6 @@ public class ChargingStation {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
-
         } finally {
             if (acquired) {
                 chargers.release();

@@ -1,4 +1,9 @@
-package org.example;
+package org.cargadores;
+
+import org.cargadores.records.StatsSnapshot;
+import org.cargadores.records.Vehicle;
+import org.cargadores.stations.ChargingStation;
+import org.cargadores.stations.StationStats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-
     public static void main(String[] args) {
         Random random = new Random();
         List<Vehicle> vehicles = new ArrayList<>();
-
 
         for (int i = 0; i < 20; i++) {
             String plate = String.format(
@@ -32,7 +35,6 @@ public class Main {
         }
 
         StatsSnapshot snapshot = stats.snapshot();
-
         System.out.println("Registro:");
         System.out.println("Kilovatios totales: " + snapshot.totalKwh());
         System.out.println("Centimos totales: " + snapshot.totalCents());
